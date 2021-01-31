@@ -14,7 +14,7 @@ class Spider(scrapy.Spider):
 
     def parse(self, response):
         # If this is an article, get data from it
-        if re.search('\/noticia\/', response.url):
+        if response.xpath('//article') is not None:
             yield {
                 'bot_name': self.name,
                 'url': response.url,
