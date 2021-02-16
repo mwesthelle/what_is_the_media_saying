@@ -28,6 +28,7 @@ class GuardianSpider(Spider):
         loader.add_xpath("description", "//meta[@name=\"description\"]/@content")
         loader.add_xpath("description", "//meta[@property=\"og:description\"]/@content")
         loader.add_css("content", "div[class*=article-body] *::text")
+        loader.add_css("content", "div[itemprop=articleBody] *::text")
         loader.add_xpath("publish_timestamp", "//meta[@property=\"article:published_time\"]/@content")
         loader.add_xpath("publish_timestamp", "//time[@itemprop=\"datePublished\"]/@datetime")
         loader.add_xpath("update_timestamp", "//meta[@property=\"article:modified_time\"]/@content")
