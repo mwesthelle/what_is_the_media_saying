@@ -16,17 +16,21 @@ class BbcSpider(Spider):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
         loader.add_value("portal", BbcSpider.portal_name)
-        loader.add_xpath("section", "//meta[@property=\"article:section\"]/@content")
+        loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_css("authors", "a[class*=-ContributorLink] *::text")
         loader.add_css("title", "h1 *::text")
-        loader.add_xpath("title", "//meta[@name=\"title\"]/@content")
-        loader.add_xpath("title", "//meta[@property=\"og:title\"]/@content")
-        loader.add_xpath("description", "//meta[@name=\"description\"]/@content")
-        loader.add_xpath("description", "//meta[@property=\"og:description\"]/@content")
+        loader.add_xpath("title", '//meta[@name="title"]/@content')
+        loader.add_xpath("title", '//meta[@property="og:title"]/@content')
+        loader.add_xpath("description", '//meta[@name="description"]/@content')
+        loader.add_xpath("description", '//meta[@property="og:description"]/@content')
         loader.add_xpath("content", "//article//p//text()")
         # No publish_timestamp here
-        loader.add_xpath("update_timestamp", "//meta[@property=\"article:modified_time\"]/@content")
-        loader.add_xpath("update_timestamp", "//time[@itemprop=\"dateModified\"]/@datetime")
+        loader.add_xpath(
+            "update_timestamp", '//meta[@property="article:modified_time"]/@content'
+        )
+        loader.add_xpath(
+            "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
+        )
         loader.add_xpath("update_timestamp", "//time/@datetime")
         yield loader.load_item()
 
