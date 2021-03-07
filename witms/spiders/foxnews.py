@@ -1,4 +1,4 @@
-from scrapy import Request, Spider
+from scrapy import Spider
 from scrapy.linkextractors import LinkExtractor
 from witms.items import Article
 from witms.loaders import ArticleLoader
