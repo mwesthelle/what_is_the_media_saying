@@ -1,0 +1,58 @@
+{
+    "settings": {
+        "index.mapping.coerce": false
+    },
+    "mappings": {
+        "dynamic": "strict",
+        "properties": {
+            "url": {
+                "type": "keyword"
+            },
+            "portal": {
+                "type": "keyword"
+            },
+            "section": {
+                "type": "keyword"
+            },
+            "authors": {
+                "type": "keyword"
+            },
+            "title": {
+                "type": "text",
+                "analyzer": "english",
+                "fields": {
+                    "raw": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    }
+                }
+            },
+            "description": {
+                "type": "text",
+                "analyzer": "english",
+                "fields": {
+                    "raw": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    }
+                }
+            },
+            "content": {
+                "type": "text",
+                "analyzer": "english",
+                "fields": {
+                    "raw": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    }
+                }
+            },
+            "publish_timestamp": {
+                "type": "date"
+            },
+            "update_timestamp": {
+                "type": "date"
+            }
+        }
+    }
+}
