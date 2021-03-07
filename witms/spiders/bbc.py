@@ -15,21 +15,21 @@ class BbcSpider(Spider):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
         loader.add_value("portal", BbcSpider.portal_name)
-        loader.add_xpath("section", "//meta[@property=\"article:section\"]/@content")  # default
-        loader.add_xpath("section", "//meta[@itemprop=\"articleSection\"]/@content")  # default
+        loader.add_xpath("section", "//meta[@property=\"article:section\"]/@content")
+        loader.add_xpath("section", "//meta[@itemprop=\"articleSection\"]/@content")
         loader.add_css("authors", "a[class*=-ContributorLink] *::text")
-        loader.add_css("title", "h1 *::text")  # default
-        loader.add_xpath("title", "//meta[@name=\"title\"]/@content")  # default
-        loader.add_xpath("title", "//meta[@property=\"og:title\"]/@content")  # default
-        loader.add_xpath("description", "//meta[@name=\"description\"]/@content")  # default
-        loader.add_xpath("description", "//meta[@property=\"og:description\"]/@content")  # default
-        loader.add_xpath("content", "//article//p//text()")  # default
-        loader.add_xpath("content", "//p//text()")  # default
+        loader.add_css("title", "h1 *::text")
+        loader.add_xpath("title", "//meta[@name=\"title\"]/@content")
+        loader.add_xpath("title", "//meta[@property=\"og:title\"]/@content")
+        loader.add_xpath("description", "//meta[@name=\"description\"]/@content")
+        loader.add_xpath("description", "//meta[@property=\"og:description\"]/@content")
+        loader.add_xpath("content", "//article//p//text()")
+        loader.add_xpath("content", "//p//text()")
         # No publish_timestamp here, but add the defaults just in case
-        loader.add_xpath("publish_timestamp", "//meta[@property=\"article:published_time\"]/@content")  # default
-        loader.add_xpath("publish_timestamp", "//time[@itemprop=\"datePublished\"]/@datetime")  # default
-        loader.add_xpath("update_timestamp", "//meta[@property=\"article:modified_time\"]/@content")  # default
-        loader.add_xpath("update_timestamp", "//time[@itemprop=\"dateModified\"]/@datetime")  # default
+        loader.add_xpath("publish_timestamp", "//meta[@property=\"article:published_time\"]/@content")
+        loader.add_xpath("publish_timestamp", "//time[@itemprop=\"datePublished\"]/@datetime")
+        loader.add_xpath("update_timestamp", "//meta[@property=\"article:modified_time\"]/@content")
+        loader.add_xpath("update_timestamp", "//time[@itemprop=\"dateModified\"]/@datetime")
         loader.add_xpath("update_timestamp", "//time/@datetime")
         yield loader.load_item()
 
