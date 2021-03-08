@@ -18,7 +18,7 @@ class CnnSpider(Spider):
         loader.add_xpath("section", '//meta[@name="section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
-        loader.add_css("authors", "a[href*=\/profiles\/] *::text")
+        loader.add_css("authors", r"a[href*=\/profiles\/] *::text")
         loader.add_css("title", "h1 *::text")
         loader.add_xpath("title", '//meta[@name="title"]/@content')
         loader.add_xpath("title", '//meta[@property="og:title"]/@content')
