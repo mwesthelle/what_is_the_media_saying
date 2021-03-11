@@ -18,7 +18,7 @@ class FoxNewsSpider(Spider):
         loader.add_xpath("section", '//meta[@name="prism.section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
-        loader.add_css("authors", "a[href*=\/person\/m\/] *::text")
+        loader.add_css("authors", r"a[href*=\/person\/m\/] *::text")
         loader.add_xpath("authors", '//meta[@name="author"]/@content')
         loader.add_xpath("authors", '//a[@rel="author"]//text()')
         loader.add_css("title", "h1 *::text")
