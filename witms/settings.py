@@ -10,3 +10,6 @@ CONCURRENT_REQUESTS = 32
 ITEM_PIPELINES = {
     "witms.pipelines.ElasticSearchPipeline": 300,
 }
+
+ES_INDEX_NAME = "news-index"
+ES_HOSTS = "localhost"
