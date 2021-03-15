@@ -31,4 +31,4 @@ class ArticleLoader(ItemLoader):
     description_in = Compose(Join(separator=""), str.strip, replace_smart_quotes)
 
     # ["Today is", " a \u201cgood\u201d day"] -> "Today is a \"good\" day"
-    content_out = Compose(Join(), replace_smart_quotes)
+    content_in = Compose(Join(), replace_smart_quotes)
