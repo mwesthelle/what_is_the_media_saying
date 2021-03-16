@@ -17,11 +17,13 @@ class ElasticSearchPipeline:
         settings = crawler.settings
         index_name = settings.get("ES_INDEX_NAME")
         es_hosts = settings.get("ES_HOSTS")
-        return cls(index_name, es_hosts)
+        es_buffer_size = settings.get("ES_BUFFER_SIZE")
+        return cls(index_name, es_hosts, es_buffer_size)
 
-    def __init__(self, es_index, es_hosts="localhost"):
+    def __init__(self, es_index, es_hosts="localhost", buffer_size=500):
         self.items_buffer = []
         self.es_index = es_index
+        self.buffer_size = buffer_size
         self.es_hosts = [host.strip() for host in es_hosts.split(",")]
 
     def open_spider(self, spider):
@@ -34,7 +36,7 @@ class ElasticSearchPipeline:
     def process_item(self, item, spider):
         action = {"_index": self.es_index, "_source": dict(item)}
         self.items_buffer.append(action)
-        if len(self.items_buffer) >= BUFFER_SIZE:
+        if len(self.items_buffer) >= self.buffer_size:
             helpers.bulk(self.client, self.items_buffer)
             self.items_buffer = []
         return item

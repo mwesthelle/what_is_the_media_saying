@@ -13,3 +13,4 @@ ITEM_PIPELINES = {
 
 ES_INDEX_NAME = "news-index"
 ES_HOSTS = "localhost"
+ES_BUFFER_SIZE = 1000
