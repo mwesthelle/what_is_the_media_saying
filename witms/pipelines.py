@@ -27,6 +27,10 @@ class ElasticSearchPipeline:
     def open_spider(self, spider):
         self.client = Elasticsearch(hosts=self.es_hosts)
 
+    def close_spider(self, spider):
+        if len(self.items_buffer) > 0:
+            helpers.bulk(self.client, self.items_buffer)
+
     def process_item(self, item, spider):
         action = {"_index": self.es_index, "_source": dict(item)}
         self.items_buffer.append(action)
