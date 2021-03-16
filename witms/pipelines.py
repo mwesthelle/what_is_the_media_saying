@@ -34,6 +34,11 @@ class ElasticSearchPipeline:
             helpers.bulk(self.client, self.items_buffer)
 
     def process_item(self, item, spider):
+        # We need to check if an item has any of a few properties in order to check
+        # whether the item is really a news article
+        any_required_properties = {"publish_timestamp", "update_timestamp", "authors"}
+        if not any([item.get[prop] for prop in any_required_properties]):
+            return item
         action = {"_index": self.es_index, "_source": dict(item)}
         self.items_buffer.append(action)
         if len(self.items_buffer) >= self.buffer_size:
