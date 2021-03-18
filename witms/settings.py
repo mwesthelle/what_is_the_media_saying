@@ -4,6 +4,7 @@ SPIDER_MODULES = ["witms.spiders"]
 NEWSPIDER_MODULE = "witms.spiders"
 
 ROBOTSTXT_OBEY = True
+USER_AGENT = ""
 
 CONCURRENT_REQUESTS = 32
 
