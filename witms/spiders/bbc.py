@@ -9,7 +9,7 @@ class BbcSpider(Spider):
     portal_name = "BBC"
     allowed_domains = ["bbc.com", "bbc.co.uk"]
     start_urls = ["https://www.bbc.com/news"]
-    link_extractor = LinkExtractor(allow="/news/")
+    link_extractor = LinkExtractor(allow="/news/", deny="/av/")
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
@@ -25,7 +25,6 @@ class BbcSpider(Spider):
         loader.add_xpath("description", '//meta[@property="og:description"]/@content')
         loader.add_xpath("content", "//article//p//text()")
         loader.add_xpath("content", "//p//text()")
-        # No publish_timestamp here, but add the defaults just in case
         loader.add_xpath(
             "publish_timestamp", '//meta[@property="article:published_time"]/@content'
         )
@@ -33,10 +32,16 @@ class BbcSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
+            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+        )
+        loader.add_xpath(
             "update_timestamp", '//meta[@property="article:modified_time"]/@content'
         )
         loader.add_xpath(
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
+        )
+        loader.add_xpath(
+            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
         )
         loader.add_xpath("update_timestamp", "//time/@datetime")
         yield loader.load_item()
