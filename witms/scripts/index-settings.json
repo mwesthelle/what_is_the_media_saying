@@ -48,10 +48,12 @@
                 }
             },
             "publish_timestamp": {
-                "type": "date"
+                "type": "date",
+                "format": "strict_date_optional_time || yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z || yyyy-MM-dd'T'HH:mm:ssZ || yyyy-MM-dd HH:mm:ss a"
             },
             "update_timestamp": {
-                "type": "date"
+                "type": "date",
+                "format": "strict_date_optional_time || yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z || yyyy-MM-dd'T'HH:mm:ssZ || yyyy-MM-dd HH:mm:ss a"
             }
         }
     }
