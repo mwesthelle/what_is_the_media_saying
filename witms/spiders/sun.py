@@ -15,6 +15,9 @@ class SunSpider(Spider):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
         loader.add_value("portal", SunSpider.portal_name)
+        loader.add_xpath(
+            "section", "//script//text()", re=r'"page_section_2":\s*"News\:(.*?)"'
+        )
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
         loader.add_css("authors", "a[rel=author] *::text")
@@ -32,7 +35,7 @@ class SunSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
-            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+            "publish_timestamp", "//script//text()", re=r'"datePublished":\s*"(.*?)"'
         )
         loader.add_xpath(
             "update_timestamp", '//meta[@property="article:modified_time"]/@content'
@@ -41,7 +44,7 @@ class SunSpider(Spider):
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
         )
         loader.add_xpath(
-            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
+            "update_timestamp", "//script//text()", re=r'"dateModified":\s*"(.*?)"'
         )
         yield loader.load_item()
 

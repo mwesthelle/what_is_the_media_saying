@@ -15,9 +15,12 @@ class RTSpider(Spider):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
         loader.add_value("portal", RTSpider.portal_name)
+        loader.add_xpath("section", '//meta[@name="article:section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
-        loader.add_xpath("authors", '//div[@class="article__author-text"]//strong//text()')
+        loader.add_xpath(
+            "authors", '//div[@class="article__author-text"]//strong//text()'
+        )
         loader.add_css("title", "h1 *::text")
         loader.add_xpath("title", '//meta[@name="title"]/@content')
         loader.add_xpath("title", '//meta[@property="og:title"]/@content')
@@ -35,7 +38,7 @@ class RTSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
-            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+            "publish_timestamp", "//script//text()", re=r'"datePublished":\s*"(.*?)"'
         )
         loader.add_xpath(
             "update_timestamp", '//meta[@property="article:modified_time"]/@content'
@@ -44,7 +47,7 @@ class RTSpider(Spider):
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
         )
         loader.add_xpath(
-            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
+            "update_timestamp", "//script//text()", re=r'"dateModified":\s*"(.*?)"'
         )
         yield loader.load_item()
 
