@@ -16,6 +16,7 @@ class CnnSpider(Spider):
         loader.add_value("url", response.url)
         loader.add_value("portal", CnnSpider.portal_name)
         loader.add_xpath("section", '//meta[@name="section"]/@content')
+        loader.add_xpath("section", '//meta[@name="article:section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
         loader.add_css("authors", r"a[href*=\/profiles\/] *::text")
@@ -40,7 +41,7 @@ class CnnSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
-            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+            "publish_timestamp", "//script//text()", re=r'"datePublished":\s*"(.*?)"'
         )
         loader.add_xpath("update_timestamp", '//meta[@name="lastmod"]/@content')
         loader.add_xpath(
@@ -50,7 +51,7 @@ class CnnSpider(Spider):
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
         )
         loader.add_xpath(
-            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
+            "update_timestamp", "//script//text()", re=r'"dateModified":\s*"(.*?)"'
         )
         yield loader.load_item()
 

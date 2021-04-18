@@ -4,17 +4,20 @@ from witms.items import Article
 from witms.loaders import ArticleLoader
 
 
-class WashingtonPostSpider(Spider):
-    name = "washingtonpost"
-    portal_name = "Washington Post"
-    allowed_domains = ["washingtonpost.com"]
-    start_urls = ["https://www.washingtonpost.com/"]
-    link_extractor = LinkExtractor(deny="/people/")
+class TimeSpider(Spider):
+    name = "time"
+    portal_name = "Time"
+    allowed_domains = ["time.com"]
+    start_urls = ["https://time.com/"]
+    link_extractor = LinkExtractor(deny=["support.time.com", "/author/"])
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
-        loader.add_value("portal", WashingtonPostSpider.portal_name)
+        loader.add_value("portal", TimeSpider.portal_name)
+        loader.add_xpath(
+            "section", "//script//text()", re=r'"articleSection":\s*"(.*?)"'
+        )
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
         loader.add_css("authors", "a[class*=author-name] *::text")
@@ -32,7 +35,7 @@ class WashingtonPostSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
-            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+            "publish_timestamp", "//script//text()", re=r'"datePublished":\s*"(.*?)"'
         )
         loader.add_xpath(
             "update_timestamp", '//meta[@property="article:modified_time"]/@content'
@@ -41,7 +44,7 @@ class WashingtonPostSpider(Spider):
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
         )
         loader.add_xpath(
-            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
+            "update_timestamp", "//script//text()", re=r'"dateModified":\s*"(.*?)"'
         )
         yield loader.load_item()
 

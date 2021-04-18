@@ -15,6 +15,7 @@ class BbcSpider(Spider):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
         loader.add_value("portal", BbcSpider.portal_name)
+        loader.add_xpath("section", '//meta[@name="article:section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
         loader.add_css("authors", "a[class*=-ContributorLink] *::text")
@@ -32,7 +33,7 @@ class BbcSpider(Spider):
             "publish_timestamp", '//time[@itemprop="datePublished"]/@datetime'
         )
         loader.add_xpath(
-            "publish_timestamp", '//script//text()', re='"datePublished":\s*"(.*?)"'
+            "publish_timestamp", "//script//text()", re=r'"datePublished":\s*"(.*?)"'
         )
         loader.add_xpath(
             "update_timestamp", '//meta[@property="article:modified_time"]/@content'
@@ -41,7 +42,7 @@ class BbcSpider(Spider):
             "update_timestamp", '//time[@itemprop="dateModified"]/@datetime'
         )
         loader.add_xpath(
-            "update_timestamp", '//script//text()', re='"dateModified":\s*"(.*?)"'
+            "update_timestamp", "//script//text()", re=r'"dateModified":\s*"(.*?)"'
         )
         loader.add_xpath("update_timestamp", "//time/@datetime")
         yield loader.load_item()
