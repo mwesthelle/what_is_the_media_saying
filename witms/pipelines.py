@@ -7,8 +7,7 @@
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 from elasticsearch import Elasticsearch, helpers
-
-BUFFER_SIZE = 1000
+from scrapy.exceptions import DropItem
 
 
 class ElasticSearchPipeline:
@@ -32,14 +31,21 @@ class ElasticSearchPipeline:
     def close_spider(self, spider):
         if len(self.items_buffer) > 0:
             helpers.bulk(self.client, self.items_buffer)
+            self.items_buffer = []
 
     def process_item(self, item, spider):
         # We need to check if an item has any of a few properties in order to check
         # whether the item is really a news article
-        any_required_properties = {"publish_timestamp", "update_timestamp", "authors"}
-        if not any([item.get[prop] for prop in any_required_properties]):
-            return item
-        action = {"_index": self.es_index, "_source": dict(item)}
+        timestamp_props = {"publish_timestamp", "update_timestamp"}
+        other_required_props = {"authors", "url"}
+        has_req_time_prop = any([item.get(prop) for prop in timestamp_props])
+        has_other_required_props = all(
+            [item.get(prop) for prop in other_required_props]
+        )
+        es_item = dict(item)
+        if not (has_req_time_prop and has_other_required_props):
+            raise DropItem()
+        action = {"_index": self.es_index, "_source": es_item}
         self.items_buffer.append(action)
         if len(self.items_buffer) >= self.buffer_size:
             helpers.bulk(self.client, self.items_buffer)
