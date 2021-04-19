@@ -10,9 +10,7 @@ USER_AGENT = (
 
 CONCURRENT_REQUESTS = 32
 
-ITEM_PIPELINES = {
-    "witms.pipelines.ElasticSearchPipeline": 300,
-}
+ITEM_PIPELINES = {"witms.pipelines.RequiredPropsPipeline": 300}
 
 ES_INDEX_NAME = "news-index"
 ES_HOSTS = "localhost"

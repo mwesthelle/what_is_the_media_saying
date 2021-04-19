@@ -7,7 +7,24 @@
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 from elasticsearch import Elasticsearch, helpers
+from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
+
+
+class RequiredPropsPipeline:
+    def process_item(self, item, spider):
+        # We need to check if an item has any of a few properties in order to check
+        # whether the item is really a news article
+        adapter = ItemAdapter(item)
+        timestamp_props = {"publish_timestamp", "update_timestamp"}
+        other_required_props = {"authors", "url"}
+        has_req_time_prop = any([adapter.get(prop) for prop in timestamp_props])
+        has_other_required_props = all(
+            [adapter.get(prop) for prop in other_required_props]
+        )
+        if not (has_req_time_prop and has_other_required_props):
+            raise DropItem("Article doesn't have the required properties")
+        return item
 
 
 class ElasticSearchPipeline:
@@ -34,17 +51,7 @@ class ElasticSearchPipeline:
             self.items_buffer = []
 
     def process_item(self, item, spider):
-        # We need to check if an item has any of a few properties in order to check
-        # whether the item is really a news article
-        timestamp_props = {"publish_timestamp", "update_timestamp"}
-        other_required_props = {"authors", "url"}
-        has_req_time_prop = any([item.get(prop) for prop in timestamp_props])
-        has_other_required_props = all(
-            [item.get(prop) for prop in other_required_props]
-        )
         es_item = dict(item)
-        if not (has_req_time_prop and has_other_required_props):
-            raise DropItem()
         action = {"_index": self.es_index, "_source": es_item}
         self.items_buffer.append(action)
         if len(self.items_buffer) >= self.buffer_size:
