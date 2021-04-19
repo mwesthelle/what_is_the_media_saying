@@ -17,12 +17,8 @@ class RequiredPropsPipeline:
         # whether the item is really a news article
         adapter = ItemAdapter(item)
         timestamp_props = {"publish_timestamp", "update_timestamp"}
-        other_required_props = {"authors", "url"}
         has_req_time_prop = any([adapter.get(prop) for prop in timestamp_props])
-        has_other_required_props = all(
-            [adapter.get(prop) for prop in other_required_props]
-        )
-        if not (has_req_time_prop and has_other_required_props):
+        if not has_req_time_prop:
             raise DropItem("Article doesn't have the required properties")
         return item
 
