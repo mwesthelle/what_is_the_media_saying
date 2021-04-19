@@ -4,13 +4,13 @@ SPIDER_MODULES = ["witms.spiders"]
 NEWSPIDER_MODULE = "witms.spiders"
 
 ROBOTSTXT_OBEY = True
-USER_AGENT = ""
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0"
+)
 
 CONCURRENT_REQUESTS = 32
 
-ITEM_PIPELINES = {
-    "witms.pipelines.ElasticSearchPipeline": 300,
-}
+ITEM_PIPELINES = {"witms.pipelines.RequiredPropsPipeline": 300}
 
 ES_INDEX_NAME = "news-index"
 ES_HOSTS = "localhost"

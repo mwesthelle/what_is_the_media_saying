@@ -10,7 +10,7 @@ class GuardianSpider(Spider):
     allowed_domains = ["theguardian.com"]
     start_urls = ["http://www.theguardian.com/international"]
     link_extractor = LinkExtractor(
-        deny=["/video/", "/audio/", "/gallery/"],
+        deny=["/video/", "/audio/", "/gallery/", "/crosswords/"],
         restrict_css="a[data-link-name*=article]",
     )
 
