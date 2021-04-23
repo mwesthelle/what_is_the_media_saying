@@ -4,23 +4,20 @@ from witms.items import Article
 from witms.loaders import ArticleLoader
 
 
-class RTSpider(Spider):
-    name = "rt"
-    portal_name = "RT News"
-    allowed_domains = ["www.rt.com"]
-    start_urls = ["https://www.rt.com/"]
-    link_extractor = LinkExtractor(deny=["/%20www."])
+class NYTimesSpider(Spider):
+    name = "nytimes"
+    portal_name = "New York Times"
+    allowed_domains = ["www.nytimes.com"]
+    start_urls = ["https://www.nytimes.com/"]
+    link_extractor = LinkExtractor(allow=["www.nytimes.com"], deny=["/by/", "/es/", "/live/", "/video/"], allow_domains=["www.nytimes.com"])
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
         loader.add_value("url", response.url)
-        loader.add_value("portal", RTSpider.portal_name)
-        loader.add_xpath("section", '//meta[@name="article:section"]/@content')
+        loader.add_value("portal", NYTimesSpider.portal_name)
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
-        loader.add_xpath(
-            "authors", '//div[@class="article__author-text"]//strong//text()'
-        )
+        loader.add_css("authors", "span[class*=last-byline] *::text")
         loader.add_css("title", "h1 *::text")
         loader.add_xpath("title", '//meta[@name="title"]/@content')
         loader.add_xpath("title", '//meta[@property="og:title"]/@content')
@@ -28,9 +25,6 @@ class RTSpider(Spider):
         loader.add_xpath("description", '//meta[@property="og:description"]/@content')
         loader.add_xpath("content", "//article//p//text()")
         loader.add_xpath("content", "//p//text()")
-        loader.add_xpath(
-            "publish_timestamp", '//meta[@name="published_time_telegram"]/@content'
-        )
         loader.add_xpath(
             "publish_timestamp", '//meta[@property="article:published_time"]/@content'
         )
