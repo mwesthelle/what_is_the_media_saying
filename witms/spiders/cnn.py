@@ -9,7 +9,7 @@ class CnnSpider(Spider):
     portal_name = "CNN"
     allowed_domains = ["edition.cnn.com"]
     start_urls = ["https://edition.cnn.com"]
-    link_extractor = LinkExtractor(deny=["/videos/", "/profiles/"])
+    link_extractor = LinkExtractor(deny=["/videos/", "/profiles/", "/ELECTION"])
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
@@ -19,7 +19,7 @@ class CnnSpider(Spider):
         loader.add_xpath("section", '//meta[@name="article:section"]/@content')
         loader.add_xpath("section", '//meta[@property="article:section"]/@content')
         loader.add_xpath("section", '//meta[@itemprop="articleSection"]/@content')
-        loader.add_css("authors", r"a[href*=\/profiles\/] *::text")
+        loader.add_xpath("authors", '//meta[@itemprop="author"]/@content')
         loader.add_css("authors", "div[class=el-unfurled__credit] *::text")
         loader.add_css("title", "h1 *::text")
         loader.add_xpath("title", '//meta[@name="title"]/@content')

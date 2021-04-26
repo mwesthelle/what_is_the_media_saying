@@ -9,7 +9,14 @@ class WashingtonPostSpider(Spider):
     portal_name = "Washington Post"
     allowed_domains = ["washingtonpost.com"]
     start_urls = ["https://www.washingtonpost.com/"]
-    link_extractor = LinkExtractor(deny="/people/")
+    link_extractor = LinkExtractor(
+        deny=[
+            "/people/",
+            "commerce.washingtonpost.com",
+            "realestate.washingtonpost.com",
+            "stats.washingtonpost.com",
+        ]
+    )
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
@@ -23,6 +30,7 @@ class WashingtonPostSpider(Spider):
         loader.add_xpath("title", '//meta[@property="og:title"]/@content')
         loader.add_xpath("description", '//meta[@name="description"]/@content')
         loader.add_xpath("description", '//meta[@property="og:description"]/@content')
+        loader.add_css("content", "div[class=article-body] *::text")
         loader.add_xpath("content", "//article//p//text()")
         loader.add_xpath("content", "//p//text()")
         loader.add_xpath(
