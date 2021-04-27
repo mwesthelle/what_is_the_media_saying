@@ -9,7 +9,11 @@ class NYTimesSpider(Spider):
     portal_name = "New York Times"
     allowed_domains = ["www.nytimes.com"]
     start_urls = ["https://www.nytimes.com/"]
-    link_extractor = LinkExtractor(allow=["www.nytimes.com"], deny=["/by/", "/es/", "/live/", "/video/"], allow_domains=["www.nytimes.com"])
+    link_extractor = LinkExtractor(
+        allow=["www.nytimes.com"],
+        deny=["/by/", "/es/", "/live/", "/video/"],
+        allow_domains=["www.nytimes.com"],
+    )
 
     def parse(self, response):
         loader = ArticleLoader(item=Article(), response=response)
