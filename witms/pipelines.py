@@ -6,6 +6,8 @@
 
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
+from dateutil.parser._parser import ParserError
+from dateutil.parser import parse
 from elasticsearch import Elasticsearch, helpers
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
@@ -18,9 +20,52 @@ class RequiredPropsPipeline:
         adapter = ItemAdapter(item)
         timestamp_props = {"publish_timestamp", "update_timestamp"}
         has_req_time_prop = any([adapter.get(prop) for prop in timestamp_props])
-        if not has_req_time_prop:
+        has_content = adapter.get("content") is not None
+        if not has_req_time_prop or not has_content:
             raise DropItem("Article doesn't have the required properties")
         return item
+
+
+class OldestPeriodPipeline:
+    @classmethod
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        oldest_allowed_period = settings.get("OLDEST_ALLOWED_PERIOD")
+        return cls(oldest_allowed_period)
+
+    def __init__(self, oldest_allowed_period=2017):
+        self.oldest_allowed_period = oldest_allowed_period
+
+    def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+        publish_time = adapter.get("publish_timestamp")
+        update_time = adapter.get("update_timestamp")
+        publish_year = None
+        update_year = None
+        if publish_time is not None:
+            try:
+                publish_datetime = parse(publish_time)
+            except ParserError:
+                pass
+            else:
+                publish_year = parse(publish_time).year
+                item["publish_timestamp"] = publish_datetime.isoformat()
+        if update_time is not None:
+            try:
+                update_datetime = parse(update_time)
+            except ParserError:
+                pass
+            else:
+                update_year = parse(update_time).year
+                item["update_timestamp"] = update_datetime.isoformat()
+        if not (update_year or publish_year):
+            raise DropItem("Need either publish or update year")
+        elif publish_year and publish_year < self.oldest_allowed_period:
+            raise DropItem("Article is from before the requested period")
+        elif update_year and update_year < self.oldest_allowed_period:
+            raise DropItem("Article is from before the requested period")
+        else:
+            return item
 
 
 class ElasticSearchPipeline:

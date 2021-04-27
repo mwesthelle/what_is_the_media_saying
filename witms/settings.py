@@ -10,8 +10,15 @@ USER_AGENT = (
 
 CONCURRENT_REQUESTS = 32
 
-ITEM_PIPELINES = {"witms.pipelines.RequiredPropsPipeline": 300}
+ITEM_PIPELINES = {
+    "witms.pipelines.RequiredPropsPipeline": 300,
+    "witms.pipelines.OldestPeriodPipeline": 400,
+}
+
+FEED_EXPORT_ENCODING = "utf-8"
 
 ES_INDEX_NAME = "news-index"
 ES_HOSTS = "localhost"
 ES_BUFFER_SIZE = 1000
+
+OLDEST_ALLOWED_PERIOD = 2018
