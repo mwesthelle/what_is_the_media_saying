@@ -9,6 +9,7 @@ from typing import Dict, Iterable, Iterator, Union
 from dateutil.parser import parse
 from dateutil.parser._parser import ParserError
 from elasticsearch import Elasticsearch, helpers
+from elasticsearch.helpers import BulkIndexError
 
 LINE_BUFFER = 10000
 
@@ -31,16 +32,18 @@ def filter_items(
         if publish_time is not None:
             try:
                 publish_year = parse(publish_time).year
+                item["publish_timestamp"] = parse(publish_time).isoformat()
             except ParserError:
                 pass
         if update_time is not None:
             try:
                 update_year = parse(update_time).year
+                item["update_timestamp"] = parse(update_time).isoformat()
             except ParserError:
                 pass
-        if publish_year and publish_year >= filter_period:
+        if publish_time and publish_year and publish_year >= filter_period:
             yield item
-        elif update_year and update_year >= filter_period:
+        elif not publish_year and (update_year and update_year >= filter_period):
             yield item
         else:
             continue
@@ -66,13 +69,24 @@ def process_file(
             for obj in filter_items(load_json(lines), filter_period):
                 if not obj:
                     continue
+                authors = obj.get("authors")
+                if authors:
+                    try:
+                        authors = authors.split("|")
+                    except AttributeError:
+                        pass
+                    else:
+                        obj["authors"] = authors
                 es_item = {"_index": "news-index", "_source": obj}
                 es_items.append(es_item)
                 if not elastic_ingest:
                     json.dump(obj, sys.stdout)
                     print()
             if elastic_ingest:
-                helpers.bulk(client, es_items)
+                try:
+                    helpers.bulk(client, es_items)
+                except BulkIndexError as e:
+                    print(e)
 
 
 if __name__ == "__main__":
@@ -81,4 +95,14 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--filter-period", type=int, default=0)
     parser.add_argument("-e", "--elastic", action="store_true")
     args = parser.parse_args()
+    if args.elastic and args.filter_period:
+        print(
+            f"Processing {args.input_file} and ingesting into news-index...",
+            file=sys.stderr,
+        )
+    elif args.elastic:
+        print(f"Ingesting {args.inputfile} into news-index...", file=sys.stderr)
+    elif args.filter_period:
+        print(f"Processing {args.inputfile}...", file=sys.stderr)
     process_file(args.inputfile, args.filter_period, args.elastic)
+    print("Finished!", file=sys.stderr)
